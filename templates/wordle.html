@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='wordle.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Wordle Game</h1>
+        <div class="grid">
+            <!-- 6x5 Grid for Wordle -->
+            <div class="row" id="row-0">
+                <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+            </div>
+            <div class="row" id="row-1">
+                <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+            </div>
+            <div class="row" id="row-2">
+                <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+            </div>
+            <div class="row" id="row-3">
+                <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+            </div>
+            <div class="row" id="row-4">
+                <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+            </div>
+            <div class="row" id="row-5">
+                <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+            </div>
+        </div>
+
+        <form id="wordleForm" method="POST">
+            <input type="text" id="guess" maxlength="5" placeholder="Enter your 5-letter guess" required>
+            <button type="submit">Submit Guess</button>
+        </form>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('wordleForm');
+        const guessInput = document.getElementById('guess');
+        const messageDiv = document.getElementById('message');
+        const grid = document.querySelector('.grid');
+        
+        let currentRow = 0; // Track which row the player is on
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const guess = guessInput.value.trim().toLowerCase();
+            
+            if (guess.length !== 5) {
+                messageDiv.textContent = 'Please enter a 5-letter word.';
+                return;
+            }
+
+            // Send the guess to the backend and handle feedback
+            fetch('/wordle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ guess: guess })
+            })
+            .then(response => response.json())
+            .then(data => {
+                messageDiv.textContent = data.message;
+                
+                if (data.status === 'correct') {
+                    highlightRow(currentRow, guess, 'green');
+                    messageDiv.textContent = 'You guessed the word correctly!';
+                } else {
+                    highlightRow(currentRow, guess, data.feedback);
+                    currentRow++;  // Move to the next row
+                }
+
+                // Reset input field
+                guessInput.value = '';  
+            })
+            .catch(err => console.error('Error:', err));
+        });
+
+        function highlightRow(rowIndex, guess, feedback) {
+            const row = document.getElementById(`row-${rowIndex}`);
+            for (let i = 0; i < 5; i++) {
+                const box = row.children[i];
+                box.textContent = guess[i].toUpperCase();
+                box.style.backgroundColor = getBoxColor(feedback[i]);
+                box.style.border = '2px solid black';
+            }
+        }
+
+        function getBoxColor(feedback) {
+            switch(feedback) {
+                case 'correct':
+                    return 'green';
+                case 'close':
+                    return 'yellow';
+                case 'wrong':
+                    return 'gray';
+                default:
+                    return 'white';
+            }
+        }
+    </script>
+</body>
+</html>
