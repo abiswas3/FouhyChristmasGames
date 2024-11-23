@@ -15,12 +15,13 @@ def make_game(game):
 
 	data = {"correct_groups": {}, "descriptions": {}, "hints": {}}
 
-	for idx,  row in game.iterrows():
+        idx = 1
+	for _,  row in game.iterrows():
 		data["correct_groups"]["group{}".format(idx)] = [x.strip() for x in row[["word1", "word2", "word3", "word4"]].tolist()]
 		data["descriptions"]["group{}".format(idx)] = row["description"]
 		data["hints"]["group{}".format(idx)] = row['hint'] 
-	
+	        idx +=1 
 	return data
 
-game = make_game(GAMES[1])
+game = make_game(GAMES[3])
 # pp.pprint(game)
