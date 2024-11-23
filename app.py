@@ -40,6 +40,7 @@ def save_leaderboard(leaderboard):
 def initialize_game():
     # Flatten the groups into a list of items
     items = sum(correct_groups.values(), [])
+    random.shuffle(items)
     game_state = {
         "board": items,  # The shuffled 16 items
         "groups": correct_groups,  # Correct groupings
@@ -152,4 +153,5 @@ def get_game_state():
     return jsonify(session['game_state'])
 
 if __name__ == '__main__':
+
     app.run(debug=True)
