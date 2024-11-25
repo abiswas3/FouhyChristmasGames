@@ -53,7 +53,7 @@ def initialize_game(username):
 
     correct_groups = game["correct_groups"]
     items = sum(correct_groups.values(), [])    
-    # random.shuffle(items)
+    random.shuffle(items)
 
     game_state = {
         "board": items,  # The shuffled 16 items
