@@ -45,14 +45,13 @@ def initialize_game(username):
     if username not in players_so_far:
         players_so_far[username] = 0
     
-
     game_idx = players_so_far[username]
     print("GAME IDX", game_idx)
     game = GAMES[game_idx]
 
     correct_groups = game["correct_groups"]
     items = sum(correct_groups.values(), [])    
-    random.shuffle(items)
+    # random.shuffle(items)
 
     game_state = {
         "board": items,  # The shuffled 16 items
@@ -154,7 +153,7 @@ def submit_score():
     save_leaderboard(leaderboard)
 
     # Reset game state for a new game
-    session['game_state'] = initialize_game()
+    session['game_state'] = initialize_game(username)
 
     return jsonify({"leaderboard": leaderboard, "message": "Score submitted successfully!"})
 

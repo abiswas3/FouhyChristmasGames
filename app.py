@@ -147,14 +147,11 @@ def submit_score():
 
     leaderboard.sort(key=lambda x: x['score'])  # Sort by tries (ascending)
 
-    # Trim leaderboard to top 10
-    # leaderboard = leaderboard[:10]
-
     # Save the updated leaderboard to the file
     save_leaderboard(leaderboard)
 
     # Reset game state for a new game
-    session['game_state'] = initialize_game()
+    session['game_state'] = initialize_game(username)
 
     return jsonify({"leaderboard": leaderboard, "message": "Score submitted successfully!"})
 
