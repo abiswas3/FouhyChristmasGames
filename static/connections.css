@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 3%;
+    padding: 1%;
     min-height: 100vh;  /* Ensure body fills at least the height of the viewport */
     display: flex;
     flex-direction: column;
@@ -17,11 +17,24 @@ body {
 .iframe{
     width: 90%;
 }
+
 .board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 2px;
     margin-bottom: 20px;
+}
+
+#tries{
+    text-align: center;
+}
+#check-group-btn{
+    text-align: center;
+    width: 100%;
+ 
+}
+.header{
+    text-align: center;
 }
 
 /* Each individual game item */
@@ -62,10 +75,10 @@ body {
 
 
 #game-container {
-    width: 90%;  /* Make the game container 90% of the viewport width */
+    width: 99%;  /* Make the game container 90% of the viewport width */
     max-width: 800px; /* Limit max width for larger screens */
     margin: 0 auto;
-    padding: 20px;
+    padding: 1px;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

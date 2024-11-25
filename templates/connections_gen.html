@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connections</title>
+    <link rel="stylesheet" href="static/connections.css">
+
+</head>
+<body>
+    <h4 class="header">Create 4 groups of 4!</h4>
+    <!-- Name Input -->
+    <div id="name-container">
+        <label for="username">Enter your name: </label>
+        <input type="text" id="username">
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <!-- Custom alert box -->
+    <div id="custom-alert" class="alert">
+        <span id="alert-message"></span>
+        <button onclick="closeAlert()">X</button>
+    </div>    
+
+    <!-- Game Container -->
+    <div id="game-container">
+        <div id="game-board" class="board"></div>
+        <div id="tries">Tries: 0</div>
+        <div>
+            <button id="check-group-btn" onclick="checkGroup()">Check Group</button>
+        </div>
+        <div id="completed-groups"></div>
+        
+    </div>
+
+     <!-- Leaderboard -->
+    <div id="leaderboard">
+        <h3>Leaderboard</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Failed Attempts</th>
+                    <th>Last Played</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-list"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let gameState = null;
+        let selectedItems = [];
+        let username = '';
+        let tries = 0;
+
+        // List of allowed names
+        const allowedNames = ["Ari", "Vicky", "Nicky", "Becky", "Dan", "Tom", "Dean", "Elly"];
+
+
+        // Function to show custom alert
+        function showAlert(message, type = 'error') {
+            const alertBox = document.getElementById('custom-alert');
+            const alertMessage = document.getElementById('alert-message');
+            
+            alertMessage.innerText = message;
+            
+            // Set the alert box type (success, error, warning)
+            alertBox.className = `alert ${type} show`;  // 'show' makes it visible
+            alertBox.style.display = 'block';
+        }
+
+        // Function to close the alert box
+        function closeAlert() {
+            const alertBox = document.getElementById('custom-alert');
+            alertBox.style.display = 'none';
+        }
+
+        // Function to check if a name is valid
+        function isNameValid(name) {
+            // Trim any leading/trailing whitespace and convert to lowercase for case-insensitive comparison
+            const trimmedName = name.trim().toLowerCase();
+
+            // Check if the name exists in the allowed names list (converted to lowercase)
+            // return allowedNames.some(allowedName => allowedName.toLowerCase() === trimmedName);
+            return true;
+        }
+
+        // Start a new game
+        function startGame() {
+            updateLeaderboard()
+            const iframe = document.getElementById('myIframe');
+             // iframe.style.display = 'none';
+
+            username = document.getElementById('username').value;
+            if (!username) {
+                showAlert('Please enter your name.');
+                return;
+            }
+            else if (!isNameValid(username)) {
+                showAlert('You are not on the Approved list of Fouhy players.');
+                return;
+            }
+
+            fetch('/start_game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            })
+            .then(response => response.json())
+            .then(data => {
+                gameState = data.game_state;
+                selectedItems = [];
+                tries = 0;
+
+                document.getElementById('name-container').style.display = 'none';
+                document.getElementById('game-container').style.display = 'block';
+                updateBoard(tries);
+                updateLeaderboard();
+            });
+        }
+
+        // Update the game board
+        function updateBoard(tries) {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';  // Clear the current board
+
+            gameState.board.forEach(item => {
+                const tile = document.createElement('div');
+                tile.classList.add('game-item');
+                tile.innerText = item;
+                tile.onclick = () => toggleSelection(item);
+                board.appendChild(tile);
+            });
+
+            document.getElementById('tries').innerText = `Tries: ${tries}`;
+        }
+
+        // Toggle selection of tiles
+        function toggleSelection(item) {
+            const index = selectedItems.indexOf(item);
+            const tiles = document.querySelectorAll('.game-item');
+
+            if (index === -1) {
+                selectedItems.push(item);
+                tiles.forEach(tile => {
+                    if (tile.innerText === item) {
+                        tile.classList.add('selected');
+                    }
+                });
+            } else {
+                selectedItems.splice(index, 1);
+                tiles.forEach(tile => {
+                    if (tile.innerText === item) {
+                        tile.classList.remove('selected');
+                    }
+                });
+            }
+        }
+
+        // Check if the selected group is correct
+        function checkGroup() {
+            if (selectedItems.length !== 4) {
+                showAlert('Please select 4 items.');
+                return;
+            }
+
+            fetch('/submit_group', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ selected_items: selectedItems })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const { valid_group, description, hint, game_state, group_key} = data;
+
+                tries = game_state['tries']
+                if (valid_group) {
+
+                const groupColorClass = group_key; 
+                
+                // Create a new div element for the completed group
+                const completedGroup = document.createElement('div');
+                completedGroup.classList.add('completed-group');
+                completedGroup.innerHTML = `${description}`;
+
+                addCompletedGroup(selectedItems, 
+                                       description,
+                                       hint, 
+                                       game_state["status"], 
+                                       groupColorClass);
+                } else {                    
+                    showAlert('Incorrect group. Try again!');
+                }
+
+                gameState = game_state;
+                selectedItems = [];
+                updateBoard(tries);
+
+
+            });
+        }
+
+        // Add completed group to the bottom section
+        function addCompletedGroup(group, description, hint, status, group_key) {
+            const completedGroupsDiv = document.getElementById('completed-groups');
+            const groupDiv = document.createElement('div');
+            groupDiv.classList.add('completed-group', group_key);
+
+            // Create a small strong text element
+            const title = document.createElement('strong');
+            title.style.fontSize = 'medium';  // Make the font size smaller, or use 'small' class
+
+            // Add the title text (e.g., "Group X")
+            title.innerText = `${hint}`;
+
+            // Append the title above the description
+            groupDiv.appendChild(title);
+
+            // Add the description below the title
+            groupDiv.innerHTML += `<p>${description}</p>`;
+
+
+            // groupDiv.innerText = `${description}`;
+            completedGroupsDiv.appendChild(groupDiv);
+
+            // Check if all groups are completed
+            if (status == true) {
+                submitScore();  // Submit the score once all groups are completed
+                document.getElementById('check-group-btn').style.display = 'none';  // Hide the button
+            }
+        }
+
+        // Helper function to map selected items to a group key
+        function getGroupKey(selectedItems) {
+            // Assuming each group has a unique key (group1, group2, etc.)
+            for (let groupKey in gameState.groups) {
+                if (selectedItems.sort().join() === gameState.groups[groupKey].sort().join()) {
+                    return groupKey;
+                }
+            }
+            return null; // If no match is found (shouldn't happen)
+        }
+
+        // Submit the score to the leaderboard
+        function submitScore() {
+            fetch('/submit_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const { leaderboard, message } = data;
+                alert(message);
+                updateLeaderboard(leaderboard);
+                resetGame();
+            });
+        }
+
+        // Update the leaderboard display
+        function updateLeaderboard() {
+            fetch('/get_leaderboard')
+            .then(response => response.json())
+            .then(leaderboard => {
+                const leaderboardList = document.getElementById('leaderboard-list');
+                leaderboardList.innerHTML = ''; // Clear the list before adding new rows
+
+                // Loop through leaderboard data and add rows to the table
+                leaderboard.forEach(player => {
+                    const lastPlayed = player.last ? new Date(player.last_played).toLocaleString() : 'N/A';
+                    
+                    // Create a table row
+                    const row = document.createElement('tr');
+                    
+                    // Add player data to the row
+                    row.innerHTML = `
+                        <td>${player.username}</td>
+                        <td>${player.score}</td>
+                        <td>${player.last}</td>
+                    `;
+                    
+                    // Append the row to the leaderboard table
+                    leaderboardList.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching leaderboard data:', error));
+        }
+
+
+        // Reset the game for a new player or round
+        function resetGame() {
+            document.getElementById('name-container').style.display = 'block';
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('completed-groups').innerHTML = '';
+            document.getElementById('check-group-btn').style.display = 'block';  // Show button for next player
+        }
+             // Call updateLeaderboard on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            updateLeaderboard();
+        });
+    </script>
+</body>
+
+<footer>
+<p>&copy; 2024 Vicky & Ari. All rights reserved.</p>
+</footer>
+
+</html>

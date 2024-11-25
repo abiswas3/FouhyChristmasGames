@@ -3,17 +3,14 @@ import random
 import json
 import os
 from datetime import datetime  # Import datetime to generate the current timestamp
-from data_handler import game
+from data_handler import GAMES
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Replace with a secret key for sessions
 
 # Path to the leaderboard file
 LEADERBOARD_FILE = 'leaderboard.json'
-
-
-ALLOWED_NAMES = ["Ari", "Vicky", "John", "Emily", "Chris"]  # Modify this list as needed
-
+players_so_far = {}
 # Correct groups (hardcoded data)
 # correct_groups = {
 #     "group1": ["apple is a hero", "banana", "cherry", "grape"],  # Fruits
@@ -21,8 +18,13 @@ ALLOWED_NAMES = ["Ari", "Vicky", "John", "Emily", "Chris"]  # Modify this list a
 #     "group3": ["dog", "cat", "rabbit", "hamster"],  # Pets
 #     "group4": ["earth", "mars", "jupiter", "saturn"]  # Planets
 # }
-correct_groups = game["correct_groups"]
+
+# game = get_random_game(GAMES)
+# correct_groups = game["correct_groups"]
+
 # print(correct_groups)
+
+
 
 # Load leaderboard from the file
 def load_leaderboard():
@@ -37,36 +39,51 @@ def save_leaderboard(leaderboard):
         json.dump(leaderboard, f)
 
 # Initialize game state
-def initialize_game():
+def initialize_game(username):
     # Flatten the groups into a list of items
-    items = sum(correct_groups.values(), [])
-    random.shuffle(items)
+    
+    if username not in players_so_far:
+        players_so_far[username] = 0
+    else:
+        players_so_far[username] = (players_so_far[username] + 1) % len(GAMES)
+
+    game_idx = players_so_far[username]
+    print("GAME IDX", game_idx)
+    game = GAMES[game_idx]
+
+    correct_groups = game["correct_groups"]
+    items = sum(correct_groups.values(), [])    
+    # random.shuffle(items)
+
     game_state = {
         "board": items,  # The shuffled 16 items
         "groups": correct_groups,  # Correct groupings
         "completed_groups": [],  # List of successfully completed groups
         "tries": 0,  # Number of tries
-        "status": False
+        "status": False,
+        "descriptions": game["descriptions"],
+        "hints": game["hints"]
     }
     return game_state
 
 # Route for starting the game
 @app.route('/')
 def index():
-    return render_template('connections.html')
+    return render_template('connections_gen.html')
 
 # Initialize game state for a player
 @app.route('/start_game', methods=['POST'])
 def start_game():
     username = request.get_json().get('username')
     session['username'] = username
-    session['game_state'] = initialize_game()
+    session['game_state'] = initialize_game(username)
     return jsonify({"game_state": session['game_state']})
 
 # Submit the group and check if it is valid
 @app.route('/submit_group', methods=['POST'])
 def submit_group():
 
+    
     group_key = ""
     selected_items = request.get_json().get("selected_items")
     game_state = session['game_state']
@@ -80,8 +97,8 @@ def submit_group():
     for group_name, group in game_state["groups"].items():
         if sorted(selected_items) == sorted(group):
             valid_group = True
-            group_description = game['descriptions'][group_name]
-            group_in_full = game['hints'][group_name]
+            group_description = session['game_state']['descriptions'][group_name]
+            group_in_full = session['game_state']['hints'][group_name]
             group_key = group_name
             break
 
@@ -154,4 +171,4 @@ def get_game_state():
 
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0'))
