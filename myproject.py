@@ -171,4 +171,4 @@ def get_game_state():
 
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0'))
+    app.run(host='0.0.0.0')
