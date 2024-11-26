@@ -258,16 +258,9 @@
             .then(response => response.json())
             .then(data => {
                 const { leaderboard, message } = data;
-<<<<<<< HEAD
-                alert(message);
-                // updateLeaderboard(leaderboard);
-                // resetGame();
-=======
                 alert("Scores submitted successfully. Click start game to play another puzzle.");
                 updateLeaderboard(leaderboard);
                 resetGame();
-
->>>>>>> 2f201affce3084827a6e188eb0b492feafa5abf8
             });
         }
 
