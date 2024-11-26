@@ -47,7 +47,6 @@ def initialize_game(username):
     
 
     game_idx = players_so_far[username]
-    print("GAME IDX", game_idx)
     game = GAMES[game_idx]
 
     correct_groups = game["correct_groups"]
@@ -125,10 +124,13 @@ def submit_group():
 
 # Submit the score to the leaderboard
 @app.route('/submit_score', methods=['POST'])
+
 def submit_score():
     username = session.get('username')
     game_state = session['game_state']
-    players_so_far[username] = (players_so_far[username] + 1) % len(GAMES)
+    if username in players_so_far:
+        players_so_far[username] = (players_so_far[username] + 1) % len(GAMES)
+
     last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
 
     # Add the score (tries) to the leaderboard
