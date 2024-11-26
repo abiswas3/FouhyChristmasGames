@@ -250,7 +250,7 @@
         }
 
         // Submit the score to the leaderboard
-        function submitScore() {
+        fnunction submitScore() {
             fetch('/submit_score', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -259,6 +259,9 @@
             .then(data => {
                 const { leaderboard, message } = data;
                 alert(message);
+                updateLeaderboard(leaderboard);
+            });
+        }
 
         // Update the leaderboard display
         function updateLeaderboard() {
