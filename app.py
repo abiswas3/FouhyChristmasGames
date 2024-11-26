@@ -51,8 +51,8 @@ def save_leaderboard(leaderboard):
 
 # Initialize game state
 def initialize_game(username):
-    # Flatten the groups into a list of items
     
+    logging.debug(players_so_far)    
     if username not in players_so_far:
         players_so_far[username] = 0
     
@@ -144,7 +144,6 @@ def submit_score():
 
     if username in players_so_far:
         players_so_far[username] = (players_so_far[username] + 1) % len(GAMES)
-
         last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
 
     # Add the score (tries) to the leaderboard
@@ -167,7 +166,7 @@ def submit_score():
     save_leaderboard(leaderboard)
 
     # Reset game state for a new game
-    session['game_state'] = initialize_game(username)
+    # session['game_state'] = initialize_game(username)
 
     return jsonify({"leaderboard": leaderboard,
                     "message": "Score submitted successfully!"})

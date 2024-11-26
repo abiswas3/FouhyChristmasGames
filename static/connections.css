@@ -216,10 +216,7 @@ th, td {
 }
 
 th {
-    /*border: 1px solid black;
-    color: black;
-    font-size: 14px;
-    font-weight: normal;*/
+
     background-color: #fff;
     border: 1px solid #d5d9d9;
     border-radius: 8px;
@@ -244,6 +241,7 @@ th {
 
 td {
     font-size: 12px;
+    text-align: center;
 }
 
 tr:nth-child(even) {
