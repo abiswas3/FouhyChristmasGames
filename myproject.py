@@ -19,7 +19,8 @@ app.secret_key = 'your_secret_key'  # Replace with a secret key for sessions
 
 # Path to the leaderboard file
 LEADERBOARD_FILE = 'leaderboard.json'
-players_so_far = {}
+
+logging.debug("Number of games {}".format(len(GAMES)))
 # Correct groups (hardcoded data)
 # correct_groups = {
 #     "group1": ["apple is a hero", "banana", "cherry", "grape"],  # Fruits
@@ -51,19 +52,22 @@ def save_leaderboard(leaderboard):
 
 # Initialize game state
 def initialize_game(username):
-    # Flatten the groups into a list of items
-    
-    if username not in players_so_far:
-        players_so_far[username] = 0
-    
-    game_idx = players_so_far[username]
-    logging.debug("GAme index: {} for user {}".format(game_idx, username))
-    
+
+    # Use persistent store
+    leaderboard = load_leaderboard()
+
+    game_idx = 0
+    for row in leaderboard:
+        if clean_string(row['username']) == clean_string(username):
+            game_idx = int(row['last']) % len(GAMES)
+            break
+
+    logging.debug(' username {} starting game :{}'.format(username, game_idx))
     game = GAMES[game_idx]
 
     correct_groups = game["correct_groups"]
     items = sum(correct_groups.values(), [])    
-    # random.shuffle(items)
+    random.shuffle(items)
 
     game_state = {
         "board": items,  # The shuffled 16 items
@@ -137,29 +141,25 @@ def submit_group():
 # Submit the score to the leaderboard
 @app.route('/submit_score', methods=['POST'])
 def submit_score():
-
+    
     username = clean_string(session.get('username'))
     game_state = session['game_state']
-    logging.debug('Submit score: username {}'.format(username))
 
-    if username in players_so_far:
-        players_so_far[username] = (players_so_far[username] + 1) % len(GAMES)
-
-        last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
+    last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
 
     # Add the score (tries) to the leaderboard
     leaderboard = load_leaderboard()
-
     first = True
     for row in leaderboard:
-        if (row['username'].strip()).lower() == username.strip().lower():
+        if clean_string(row['username']) == username:
             first = False
             break
 
     if not first:
         row["score"] = int(row["score"]) + game_state["tries"]
+        row["last"] = int(row["last"]) + 1
     else:
-        leaderboard.append({"username": username, "score": game_state["tries"], "last": last_played})
+        leaderboard.append({"username": username, "score": game_state["tries"], "last": 1})
 
     leaderboard.sort(key=lambda x: x['score'])  # Sort by tries (ascending)
 
@@ -168,7 +168,7 @@ def submit_score():
 
     # Reset game state for a new game
     session['game_state'] = initialize_game(username)
-
+    
     return jsonify({"leaderboard": leaderboard,
                     "message": "Score submitted successfully!"})
 
@@ -185,3 +185,4 @@ def get_game_state():
 if __name__ == '__main__':
 
     app.run(host="0.0.0.0")
+

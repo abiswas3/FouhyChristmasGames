@@ -42,7 +42,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Failed Attempts</th>
-                    <th>Last Played</th>
+                    <th>Number Of Games Played</th>
                 </tr>
             </thead>
             <tbody id="leaderboard-list"></tbody>
@@ -250,7 +250,7 @@
         }
 
         // Submit the score to the leaderboard
-        fnunction submitScore() {
+        function submitScore() {
             fetch('/submit_score', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -258,9 +258,9 @@
             .then(response => response.json())
             .then(data => {
                 const { leaderboard, message } = data;
-                alert(message);
-                // updateLeaderboard(leaderboard);
-                // resetGame();
+                alert("Scores submitted successfully. Click start game to play another puzzle.");
+                updateLeaderboard(leaderboard);
+                resetGame();
 
             });
         }
