@@ -45,6 +45,7 @@ def initialize_game(username):
     if username not in players_so_far:
         players_so_far[username] = 0
     
+
     game_idx = players_so_far[username]
     print("GAME IDX", game_idx)
     game = GAMES[game_idx]
@@ -146,9 +147,6 @@ def submit_score():
 
     leaderboard.sort(key=lambda x: x['score'])  # Sort by tries (ascending)
 
-    # Trim leaderboard to top 10
-    # leaderboard = leaderboard[:10]
-
     # Save the updated leaderboard to the file
     save_leaderboard(leaderboard)
 
@@ -169,4 +167,4 @@ def get_game_state():
 
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0')
+    app.run(host="0.0.0.0")
