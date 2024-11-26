@@ -1,12 +1,13 @@
 /* General styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #444444;
     margin: 0;
     padding: 1%;
     min-height: 100vh;  /* Ensure body fills at least the height of the viewport */
     display: flex;
     flex-direction: column;
-    background-color: #f4f4f4;
+    background-color: white;;
 
 }
 
@@ -28,9 +29,10 @@ body {
 #tries{
     text-align: center;
 }
+
 #check-group-btn{
     text-align: center;
-    width: 100%;
+    width: 50%;
  
 }
 .header{
@@ -44,8 +46,8 @@ body {
     justify-content: center;
     width: 100%;  /* Use 100% of the cell's available width */
     height: 100%;  /* Ensure the height is consistent with all other rows */
-    background-color: #00796b;
-    color: white;
+    background-color: rgb(220,220,220);
+    color: black;
     font-weight: bold;
     border-radius: 8px;
     cursor: pointer;
@@ -69,7 +71,8 @@ body {
 }
 
 .game-item.selected {
-    background-color: red;  /* Highlight the selected items */
+    background-color: rgb(100, 149, 237);  /* Highlight the selected items */
+    color: white;
 }
 
 
@@ -92,8 +95,8 @@ body {
 
 .completed-group {
     padding: 10px;
-    background-color: #e0f7fa;
-    border: 1px solid #00acc1;
+    /* background-color: #e0f7fa; */
+    /* border: 1px solid #00acc1; */
     border-radius: 5px;
     margin-bottom: 10px;
 }
@@ -104,22 +107,72 @@ body {
 }
 
 h1, h3 {
-    color: #00796b;
+    color: black;
 }
 
-button {
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #00796b;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+<!-- HTML !-->
+<button class="button-6" role="button">Button 6</button>
+
+/* CSS */
+.button {
+  align-items: center;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: .25rem;
+  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1.25;
+  margin: 0;
+  min-height: 3rem;
+  padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+  position: relative;
+  text-decoration: none;
+  transition: all 250ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  width: auto;
 }
+
+.button:hover,.button:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  background-color: #F0F0F1;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  color: rgba(0, 0, 0, 0.65);
+  transform: translateY(0);
+}
+
+/* button { */
+/*     padding: 10px; */
+/*     font-size: 16px; */
+/*     cursor: pointer; */
+/*     /\* background-color: rgb(100, 149, 237);; *\/ */
+/*     color: black; */
+/*     border: 2px solid black; */
+/*     border-radius: 5px; */
+/*     transition: background-color 0.3s; */
+/* } */
 
 button:hover {
-    background-color: #004d40;
+    background-color: rgb(100, 149, 237);
 }
 
 input[type="text"] {
@@ -132,6 +185,7 @@ input[type="text"] {
 
 #name-container {
     display: block;
+    background-color: white;
 }
 
 
@@ -141,7 +195,7 @@ input[type="text"] {
 
 /* Footer Styles */
 footer {
-    background-color: #00796b;
+    background-color: rgb(100, 149, 237);;
     color: white;
     text-align: center;
     padding: 10px 0;
@@ -166,9 +220,9 @@ th, td {
 }
 
 th {
-    background-color: #00796b;
-    color: white;
-    font-size: 18px;
+    border: 1px solid black;
+    color: black;
+    font-size: 14px;
 }
 
 td {
