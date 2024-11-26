@@ -250,7 +250,7 @@
         }
 
         // Submit the score to the leaderboard
-        fnunction submitScore() {
+        function submitScore() {
             fetch('/submit_score', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -261,7 +261,6 @@
                 alert(message);
                 // updateLeaderboard(leaderboard);
                 // resetGame();
-
             });
         }
 

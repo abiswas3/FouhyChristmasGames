@@ -1,4 +1,13 @@
 from flask import Flask, render_template, request, jsonify, session
+import logging
+
+# Configure logging to write to a file
+logging.basicConfig(
+    filename='file.log',  # Log file name
+    level=logging.DEBUG,  # Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
+)
+
 import random
 import json
 import os
@@ -25,6 +34,8 @@ players_so_far = {}
 # print(correct_groups)
 
 
+def clean_string(name):
+    return name.strip().lower()
 
 # Load leaderboard from the file
 def load_leaderboard():
@@ -45,8 +56,9 @@ def initialize_game(username):
     if username not in players_so_far:
         players_so_far[username] = 0
     
-
     game_idx = players_so_far[username]
+    logging.debug("GAme index: {} for user {}".format(game_idx, username))
+    
     game = GAMES[game_idx]
 
     correct_groups = game["correct_groups"]
@@ -73,7 +85,7 @@ def index():
 @app.route('/start_game', methods=['POST'])
 def start_game():
     username = request.get_json().get('username')
-    session['username'] = username
+    session['username'] = clean_string(username)
     session['game_state'] = initialize_game(username)
     return jsonify({"game_state": session['game_state']})
 
@@ -124,14 +136,16 @@ def submit_group():
 
 # Submit the score to the leaderboard
 @app.route('/submit_score', methods=['POST'])
-
 def submit_score():
-    username = session.get('username')
+
+    username = clean_string(session.get('username'))
     game_state = session['game_state']
+    logging.debug('Submit score: username {}'.format(username))
+
     if username in players_so_far:
         players_so_far[username] = (players_so_far[username] + 1) % len(GAMES)
 
-    last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
+        last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
 
     # Add the score (tries) to the leaderboard
     leaderboard = load_leaderboard()
@@ -155,7 +169,8 @@ def submit_score():
     # Reset game state for a new game
     session['game_state'] = initialize_game(username)
 
-    return jsonify({"leaderboard": leaderboard, "message": "Score submitted successfully!"})
+    return jsonify({"leaderboard": leaderboard,
+                    "message": "Score submitted successfully!"})
 
 @app.route('/get_leaderboard')
 def get_leaderboard():
