@@ -26,13 +26,25 @@ body {
     margin-bottom: 20px;
 }
 
-#tries{
+.tries-div{
+    
     text-align: center;
+    display: block;
+    margin: 20px auto;     
+    width: 40%;
+    font-size: 16px;
 }
 
+/*#tries {
+    margin-top: 10px;
+    font-size: 16px;
+}
+*/
 
-.header{
-    text-align: center;
+
+#heading{
+ display: none;   
+ text-align: center;
 }
 
 /* Each individual game item */
@@ -97,10 +109,6 @@ body {
     margin-bottom: 10px;
 }
 
-#tries {
-    margin-top: 10px;
-    font-size: 16px;
-}
 
 h1, h3 {
     color: black;
@@ -113,7 +121,7 @@ h1, h3 {
 .button-13 {
   background-color: #fff;
   border: 1px solid #d5d9d9;
-  border-radius: 8px;
+  border-radius: 2px;
   box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
   box-sizing: border-box;
   color: #0f1111;
@@ -208,10 +216,29 @@ th, td {
 }
 
 th {
-    border: 1px solid black;
+    /*border: 1px solid black;
     color: black;
     font-size: 14px;
-    font-weight: normal;
+    font-weight: normal;*/
+    background-color: #fff;
+    border: 1px solid #d5d9d9;
+    border-radius: 8px;
+    box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
+    box-sizing: border-box;
+    color: #0f1111;
+    cursor: pointer;
+
+    font-family: "Amazon Ember",sans-serif;
+    font-size: 13px;
+    line-height: 29px;
+    padding: 0 10px 0 11px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+     vertical-align: middle;
 
 }
 

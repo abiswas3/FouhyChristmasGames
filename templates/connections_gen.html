@@ -8,7 +8,8 @@
 
 </head>
 <body>
-    <h4 class="header">Create 4 groups of 4!</h4>
+    <h2 id="game-heading">Vicky's Connections</h2> 
+    <h4 id="heading">Create 4 groups of 4!</h4>
     <!-- Name Input -->
     <div id="name-container">
         <label for="username">Enter your name: </label>
@@ -24,10 +25,10 @@
     <!-- Game Container -->
     <div id="game-container">
         <div id="game-board" class="board"></div>
-        <div id="tries">Tries: 0</div>
+        <button id="check-group-btn" class="button-13" onclick="checkGroup()">Check Group</button>
+        <div class="tries-div"><span> &#128561; </span><span id="tries">Tries:0 </span></div>
         <div id="completed-groups"></div>        
         
-         <button id="check-group-btn" class="button-13" onclick="checkGroup()">Check Group</button>
         
     </div>
 
@@ -35,7 +36,7 @@
 
      <!-- Leaderboard -->
     <div id="leaderboard">
-        <h3>Leaderboard</h3>
+        <h3>Leaderboard 🏆📊🏅🎖️</h3>
         <table>
             <thead>
                 <tr>
@@ -88,6 +89,12 @@
 
         // Start a new game
         function startGame() {
+            const header = document.getElementById('heading');
+            header.style.display = 'block';
+
+            const game_header = document.getElementById('game-heading');
+            game_header.style.display = 'none';
+            
             updateLeaderboard()
             const iframe = document.getElementById('myIframe');
              // iframe.style.display = 'none';
