@@ -250,9 +250,9 @@
             .then(response => response.json())
             .then(data => {
                 const { leaderboard, message } = data;
-                alert(message);
+                // alert(message);
                 updateLeaderboard(leaderboard);
-                resetGame();
+                // resetGame();
             });
         }
 

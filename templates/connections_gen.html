@@ -5,31 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connections</title>
     <link rel="stylesheet" href="static/connections.css">
-
+    <link rel="stylesheet" href="static/dropdown.css">
+    <link rel="stylesheet" href="static/colours.css">
+    <link rel="stylesheet" href="static/alert.css">
+    <link rel="stylesheet" href="static/navbar.css">
+    <script src="static/dropdown.js"></script>
+    <script src="static/startGame.js"></script>
 </head>
+
+<nav class="navbar">
+    <h1 class="navbar-title">Vicky's connections</h1>
+    <a href="/" class="home-button">Home</a>
+    <!-- <a href="/" class="button-13 home-button" id="home-button">Home</a> -->
+</nav>
+
+
 <body>
-    <h2 id="game-heading">Vicky's Connections</h2> 
-    <h4 id="heading">Create 4 groups of 4!</h4>
-    <!-- Name Input -->
-    <div id="name-container">
-        <label for="username">Enter your name: </label>
-        <input type="text" id="username">
-        <buttn onclick="startGame()" class="button-13">Start Game</button>
+    
+    <!-- <h4 id="heading">Create 4 groups of 4!</h4> -->
+    <div class="header-container">
+        <h4 id="heading">Create 4 groups of 4!</h4>
     </div>
+
+
+    <div class="flex-container">
+        <!-- Name Input Section -->
+        <div id="name-container">
+            <label for="username">Enter your name:</label>
+            <input type="text" id="username">            
+        </div>
+        <!-- Dropdown Section -->
+        <div id="dropdown-heading">
+            <label for="categoryDropdown">Choose a category:</label>
+            <select id="categoryDropdown" onchange="handleSelection()">
+                <option value="">--Select an option--</option>
+            </select>
+        </div>        
+        <!-- Button -->
+        <button id="startGame" onclick="startGame()" class="button-13">Start Game</button>
+    </div>  
+
     <!-- Custom alert box -->
     <div id="custom-alert" class="alert">
         <span id="alert-message"></span>
         <button onclick="closeAlert()">X</button>
-    </div>    
+    </div>  
 
     <!-- Game Container -->
     <div id="game-container">
         <div id="game-board" class="board"></div>
-        <button id="check-group-btn" class="button-13" onclick="checkGroup()">Check Group</button>
+            <!-- Button Container -->
+        <div class="button-container">            
+            <button id="check-group-btn" class="button-13" onclick="checkGroup()">Check Group</button>
+            <button id="next-game-btn" class="button-13" onclick="nextGame()">Next Game</button>
+
+
+        </div>
         <div class="tries-div"><span> &#128561; </span><span id="tries">Tries:0 </span></div>
-        <div id="completed-groups"></div>        
-        
-        
+        <div id="completed-groups"></div>                
     </div>
 
 
@@ -61,6 +94,7 @@
 
         // Function to show custom alert
         function showAlert(message, type = 'error') {
+            console.log(message);
             const alertBox = document.getElementById('custom-alert');
             const alertMessage = document.getElementById('alert-message');
             
@@ -87,45 +121,6 @@
             return true;
         }
 
-        // Start a new game
-        function startGame() {
-            const header = document.getElementById('heading');
-            header.style.display = 'block';
-
-            const game_header = document.getElementById('game-heading');
-            game_header.style.display = 'none';
-            
-            updateLeaderboard()
-            const iframe = document.getElementById('myIframe');
-             // iframe.style.display = 'none';
-
-            username = document.getElementById('username').value;
-            if (!username) {
-                showAlert('Please enter your name.');
-                return;
-            }
-            else if (!isNameValid(username)) {
-                showAlert('You are not on the Approved list of Fouhy players.');
-                return;
-            }
-
-            fetch('/start_game', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username })
-            })
-            .then(response => response.json())
-            .then(data => {
-                gameState = data.game_state;
-                selectedItems = [];
-                tries = 0;
-
-                document.getElementById('name-container').style.display = 'none';
-                document.getElementById('game-container').style.display = 'block';
-                updateBoard(tries);
-                updateLeaderboard();
-            });
-        }
 
         // Update the game board
         function updateBoard(tries) {
@@ -258,9 +253,9 @@
             .then(response => response.json())
             .then(data => {
                 const { leaderboard, message } = data;
-                alert("Scores submitted successfully. Click start game to play another puzzle.");
+                // alert("Scores submitted successfully. Click start game to play another puzzle.");
                 updateLeaderboard(leaderboard);
-                resetGame();
+                // resetGame();
             });
         }
 
@@ -299,12 +294,18 @@
             document.getElementById('name-container').style.display = 'block';
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('completed-groups').innerHTML = '';
-            document.getElementById('check-group-btn').style.display = 'block';  // Show button for next player
+            document.getElementById('check-group-btn').style.display = 'block';
         }
              // Call updateLeaderboard on page load
         document.addEventListener("DOMContentLoaded", function() {
             updateLeaderboard();
         });
+
+        // Function to handle Next Game
+        function nextGame() {
+              resetGame();
+              startGame(); // Start a new game
+        }
     </script>
 </body>
 

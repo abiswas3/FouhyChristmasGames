@@ -1,18 +1,18 @@
 /* General styles */
 body {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    color: #444444;
+    
     margin: 0;
     padding: 1%;
     min-height: 100vh;  /* Ensure body fills at least the height of the viewport */
     display: flex;
     flex-direction: column;
-    background-color: white;;
+    
 
 }
 
 #leaderboard {
-    margin-top: 20px;
+    margin-top: 20px;   
 }
 
 .iframe{
@@ -42,7 +42,7 @@ body {
 */
 
 
-#heading{
+#heading, #home-button{
  display: none;   
  text-align: center;
 }
@@ -54,7 +54,6 @@ body {
     justify-content: center;
     width: 100%;  /* Use 100% of the cell's available width */
     height: 100%;  /* Ensure the height is consistent with all other rows */
-    background-color: #F5F5F5;
     color: black;
     font-weight: bold;
     border-radius: 8px;
@@ -119,17 +118,15 @@ h1, h3 {
 
 /* CSS */
 .button-13 {
-  background-color: #fff;
-  border: 1px solid #d5d9d9;
+  margin-top: 8px;
   border-radius: 2px;
   box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
   box-sizing: border-box;
-  color: #0f1111;
   cursor: pointer;
   display: inline-block;
   font-family: "Amazon Ember",sans-serif;
   font-size: 13px;
-  line-height: 29px;
+  line-height: 14px;
   padding: 0 10px 0 11px;
   position: relative;
   text-align: center;
@@ -141,9 +138,7 @@ h1, h3 {
   width: 100px;
 }
 
-.button-13:hover {
-  background-color: #f7fafa;
-}
+
 
 .button-13:focus {
   border-color: #008296;
@@ -151,20 +146,8 @@ h1, h3 {
   outline: 0;
 }
 
-/* button { */
-/*     padding: 10px; */
-/*     font-size: 16px; */
-/*     cursor: pointer; */
-/*     /\* background-color: rgb(100, 149, 237);; *\/ */
-/*     color: black; */
-/*     border: 2px solid black; */
-/*     border-radius: 5px; */
-/*     transition: background-color 0.3s; */
-/* } */
 
-button:hover {
-    background-color: rgb(100, 149, 237);
-}
+
 
 input[type="text"] {
     padding: 8px;
@@ -174,13 +157,13 @@ input[type="text"] {
     border: 1px solid #ccc;
 }
 
-#name-container {
+#name-container{
+    margin-top: 10px;
     display: block;
-    background-color: white;
 }
 
 
-#check-group-btn {
+#check-group-btn, #next-game-btn, #home-button {
 /*    margin-top: 10px;*/
     text-align: center;
     display: block;
@@ -206,7 +189,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    background-color: white;
+    
 }
 
 th, td {
@@ -217,14 +200,11 @@ th, td {
 
 th {
 
-    background-color: #fff;
     border: 1px solid #d5d9d9;
     border-radius: 8px;
     box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
     box-sizing: border-box;
-    color: #0f1111;
     cursor: pointer;
-
     font-family: "Amazon Ember",sans-serif;
     font-size: 13px;
     line-height: 29px;
@@ -242,15 +222,9 @@ th {
 td {
     font-size: 12px;
     text-align: center;
+    border: 1px solid #d5d9d9;
 }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-tr:hover {
-    background-color: #f1f1f1;
-}
 
 
 /* Group Colors */
@@ -270,64 +244,34 @@ tr:hover {
     background-color: #FF5722;  /* Orange */
 }
 
-
-/* Styling for the alert box */
-.alert {
-    display: none; /* Hidden by default */
-    padding: 20px;
-    background-color: #f8d7da; /* Light red for errors */
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 5px;
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    max-width: 80%;
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.alert button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
-    color: #721c24;
-    cursor: pointer;
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    padding: 5px;
-}
-
-/* Styles for success alerts */
-.alert.success {
-    background-color: #d4edda;
-    color: #155724;
-    border-color: #c3e6cb;
-}
-
-/* Styles for warning alerts */
-.alert.warning {
-    background-color: #fff3cd;
-    color: #856404;
-    border-color: #ffeeba;
-}
-
-/* Add a smooth fade-in effect */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+/* Responsive: Vertical layout for small screens */
+@media (max-width: 600px) {
+    .flex-container {
+        flex-direction: column;
+        align-items: flex-start; /* Align items to the left */
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .flex-container button {
+        align-self: center; /* Center align the button */
     }
 }
 
-.alert.show {
-    animation: fadeIn 0.3s ease-in-out;
+/* Ensure buttons are aligned side by side with spacing */
+.button-container {
+    display: flex;
+    gap: 10px; /* Spacing between buttons */
+    margin-top: 10px;
+}
+
+/* Responsive design: Stack buttons vertically on small screens */
+@media (max-width: 600px) {
+    .game-item {
+        width: 100%;  /* Use 100% of the cell's available width */
+        font-size: 12px;
+        /* Word wrapping properties */
+        word-wrap: break-word; /* Allows long words to break onto the next line */
+        overflow-wrap: break-word; /* Ensures long unbroken strings wrap */
+        white-space: normal; /* Allows text to wrap naturally */
+    }
+
 }

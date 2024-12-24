@@ -3,7 +3,7 @@ import logging
 
 # Configure logging to write to a file
 logging.basicConfig(
-    filename='file.log',  # Log file name
+    # filename='file.log',  # Log file name
     level=logging.DEBUG,  # Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
@@ -33,6 +33,28 @@ players_so_far = {}
 
 # print(correct_groups)
 
+@app.route('/get-options', methods=['GET'])
+def get_options():
+
+    # TODO: Change to the ones in the data.
+    # Example options to populate the dropdown
+    options = [
+        {"value": "Christmas Connections", "label": "Fouhy Christmas"},
+        # {"value": "sports", "label": "Sports"},
+        # {"value": "science", "label": "Science"},
+        # {"value": "history", "label": "History"},
+    ]
+    return jsonify(options)
+
+@app.route('/process-selection', methods=['POST'])
+def process_selection():
+    data = request.get_json()
+    selection = data.get('selection')
+    
+    # Do something with the selection
+    response_message = f"You selected: {selection}"
+    logging.debug('{}'.format(response_message))
+    return jsonify({"message": response_message})
 
 def clean_string(name):
     return name.strip().lower()
@@ -50,15 +72,19 @@ def save_leaderboard(leaderboard):
         json.dump(leaderboard, f)
 
 # Initialize game state
-def initialize_game(username):
+def initialize_game(username, selectedCategory):
     
-    logging.debug(players_so_far)    
-    if username not in players_so_far:
-        players_so_far[username] = 0
-    
-    game_idx = players_so_far[username]
-    logging.debug("GAme index: {} for user {}".format(game_idx, username))
-    
+    # Use persistent store
+    leaderboard = load_leaderboard()
+    # TODO: use selected category to filter games.
+
+    game_idx = 0
+    for row in leaderboard:
+        if clean_string(row['username']) == clean_string(username):
+            game_idx = int(row['last']) % len(GAMES)
+            break
+
+    logging.debug(' username {} starting game :{}'.format(username, game_idx))
     game = GAMES[game_idx]
 
     correct_groups = game["correct_groups"]
@@ -85,14 +111,15 @@ def index():
 @app.route('/start_game', methods=['POST'])
 def start_game():
     username = request.get_json().get('username')
+    selectedCategory = request.get_json().get('selectedCategory')
     session['username'] = clean_string(username)
-    session['game_state'] = initialize_game(username)
+    session['selectedCategory'] = selectedCategory
+    session['game_state'] = initialize_game(username, selectedCategory)
     return jsonify({"game_state": session['game_state']})
 
 # Submit the group and check if it is valid
 @app.route('/submit_group', methods=['POST'])
 def submit_group():
-
     
     group_key = ""
     selected_items = request.get_json().get("selected_items")
@@ -137,28 +164,26 @@ def submit_group():
 # Submit the score to the leaderboard
 @app.route('/submit_score', methods=['POST'])
 def submit_score():
-
+    
     username = clean_string(session.get('username'))
+    selectedCategory = clean_string(session['selectedCategory'])
     game_state = session['game_state']
-    logging.debug('Submit score: username {}'.format(username))
 
-    if username in players_so_far:
-        players_so_far[username] = (players_so_far[username] + 1) % len(GAMES)
-        last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
+    last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
 
     # Add the score (tries) to the leaderboard
     leaderboard = load_leaderboard()
-
     first = True
     for row in leaderboard:
-        if (row['username'].strip()).lower() == username.strip().lower():
+        if clean_string(row['username']) == username:
             first = False
             break
 
     if not first:
         row["score"] = int(row["score"]) + game_state["tries"]
+        row["last"] = int(row["last"]) + 1
     else:
-        leaderboard.append({"username": username, "score": game_state["tries"], "last": last_played})
+        leaderboard.append({"username": username, "score": game_state["tries"], "last": 1})
 
     leaderboard.sort(key=lambda x: x['score'])  # Sort by tries (ascending)
 
@@ -166,15 +191,15 @@ def submit_score():
     save_leaderboard(leaderboard)
 
     # Reset game state for a new game
-    # session['game_state'] = initialize_game(username)
-
+    session['game_state'] = initialize_game(username, selectedCategory)
+    
     return jsonify({"leaderboard": leaderboard,
                     "message": "Score submitted successfully!"})
 
 @app.route('/get_leaderboard')
 def get_leaderboard():
     leaderboard = load_leaderboard()
-    print("loading leaderboard", leaderboard)
+    # print("loading leaderboard", leaderboard)
     return jsonify(leaderboard)
 
 @app.route('/get_game_state')
@@ -184,3 +209,5 @@ def get_game_state():
 if __name__ == '__main__':
 
     app.run(debug=True)
+    # app.run(host="0.0.0.0")
+
