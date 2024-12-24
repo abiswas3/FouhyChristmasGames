@@ -3,7 +3,7 @@ import logging
 
 # Configure logging to write to a file
 logging.basicConfig(
-    filename='file.log',  # Log file name
+    # filename='file.log',  # Log file name
     level=logging.DEBUG,  # Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
@@ -19,8 +19,7 @@ app.secret_key = 'your_secret_key'  # Replace with a secret key for sessions
 
 # Path to the leaderboard file
 LEADERBOARD_FILE = 'leaderboard.json'
-
-logging.debug("Number of games {}".format(len(GAMES)))
+players_so_far = {}
 # Correct groups (hardcoded data)
 # correct_groups = {
 #     "group1": ["apple is a hero", "banana", "cherry", "grape"],  # Fruits
@@ -34,6 +33,28 @@ logging.debug("Number of games {}".format(len(GAMES)))
 
 # print(correct_groups)
 
+@app.route('/get-options', methods=['GET'])
+def get_options():
+
+    # TODO: Change to the ones in the data.
+    # Example options to populate the dropdown
+    options = [
+        {"value": "Christmas Connections", "label": "Fouhy Christmas"},
+        # {"value": "sports", "label": "Sports"},
+        # {"value": "science", "label": "Science"},
+        # {"value": "history", "label": "History"},
+    ]
+    return jsonify(options)
+
+@app.route('/process-selection', methods=['POST'])
+def process_selection():
+    data = request.get_json()
+    selection = data.get('selection')
+    
+    # Do something with the selection
+    response_message = f"You selected: {selection}"
+    logging.debug('{}'.format(response_message))
+    return jsonify({"message": response_message})
 
 def clean_string(name):
     return name.strip().lower()
@@ -51,10 +72,11 @@ def save_leaderboard(leaderboard):
         json.dump(leaderboard, f)
 
 # Initialize game state
-def initialize_game(username):
-
+def initialize_game(username, selectedCategory):
+    
     # Use persistent store
     leaderboard = load_leaderboard()
+    # TODO: use selected category to filter games.
 
     game_idx = 0
     for row in leaderboard:
@@ -67,7 +89,7 @@ def initialize_game(username):
 
     correct_groups = game["correct_groups"]
     items = sum(correct_groups.values(), [])    
-    random.shuffle(items)
+    # random.shuffle(items)
 
     game_state = {
         "board": items,  # The shuffled 16 items
@@ -89,14 +111,15 @@ def index():
 @app.route('/start_game', methods=['POST'])
 def start_game():
     username = request.get_json().get('username')
+    selectedCategory = request.get_json().get('selectedCategory')
     session['username'] = clean_string(username)
-    session['game_state'] = initialize_game(username)
+    session['selectedCategory'] = selectedCategory
+    session['game_state'] = initialize_game(username, selectedCategory)
     return jsonify({"game_state": session['game_state']})
 
 # Submit the group and check if it is valid
 @app.route('/submit_group', methods=['POST'])
 def submit_group():
-
     
     group_key = ""
     selected_items = request.get_json().get("selected_items")
@@ -143,6 +166,7 @@ def submit_group():
 def submit_score():
     
     username = clean_string(session.get('username'))
+    selectedCategory = clean_string(session['selectedCategory'])
     game_state = session['game_state']
 
     last_played = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as 'YYYY-MM-DD HH:MM:SS'
@@ -167,7 +191,7 @@ def submit_score():
     save_leaderboard(leaderboard)
 
     # Reset game state for a new game
-    session['game_state'] = initialize_game(username)
+    session['game_state'] = initialize_game(username, selectedCategory)
     
     return jsonify({"leaderboard": leaderboard,
                     "message": "Score submitted successfully!"})
@@ -175,7 +199,7 @@ def submit_score():
 @app.route('/get_leaderboard')
 def get_leaderboard():
     leaderboard = load_leaderboard()
-    print("loading leaderboard", leaderboard)
+    # print("loading leaderboard", leaderboard)
     return jsonify(leaderboard)
 
 @app.route('/get_game_state')
@@ -184,5 +208,6 @@ def get_game_state():
 
 if __name__ == '__main__':
 
-    app.run(host="0.0.0.0")
+    app.run(debug=True)
+    # app.run(host="0.0.0.0")
 

@@ -1,0 +1,67 @@
+:root {
+  --badger-blue: #0479A8;    
+  --date-color: var(--badger-blue);
+  --link-color: #C1E1C1;
+  --dark-background-color: #121212;
+  --gold: #d2c155;
+  --gray: #36454F;
+}
+
+.navbar-title{
+    color: var(--gold);
+}
+.navbar > a{
+    color: var(--gold);
+}
+body{
+	color: #d2c155;;
+	background-color: var(--dark-background-color);
+}
+
+table{
+	background-color: var(--dark-background-color);
+}
+
+tr:nth-child(even) {
+    background-color: var(--dark-background-color);
+}
+
+tr:hover {
+    background-color: #64b5f6;
+}
+
+.button-13{
+  color: var(--gold);
+  background-color: var(--dark-background-color);
+  border: 1px solid var(--gold);
+}
+
+.button-13:hover {
+  background-color: #f7fafa;
+}
+
+button:hover {
+    background-color: rgb(100, 149, 237);
+}
+
+#leaderboard > h3 {
+    color: var(--gold);
+}
+
+#completed-groups{
+	color: black;
+}
+
+.game-item {
+	background-color: var(--gray);
+	color: var(--gold);
+}
+
+#game-container{
+	background-color: var(--dark-background-color);
+}
+
+footer {
+	background-color: var(--gray);
+	color: var(--gold);
+}

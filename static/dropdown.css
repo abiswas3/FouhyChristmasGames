@@ -1,0 +1,26 @@
+/* Flex container to align items side by side */
+.flex-container {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Spacing between elements */
+}
+
+/* Styling for button */
+.button-13 {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.button-13:hover {
+    background-color: #0056b3;
+}
+
+/* Optional: Ensure input fields align properly */
+#username {
+    padding: 5px;
+    font-size: 1rem;
+}

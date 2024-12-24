@@ -2,7 +2,7 @@ import pandas as pd
 import pprint as pp
 import random 
 
-df = pd.read_csv('fouhy_connections_school.csv')
+df = pd.read_csv('fouhy_connections_main.csv')
 tmp = ['hint', 'description', 'word1', 'word2', 'word3', 'word4', 'difficulty', 'group_number'] 
 df.columns = tmp + [""]*(len(df.iloc[0])-len(tmp))
 
